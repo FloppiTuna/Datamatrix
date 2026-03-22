@@ -27,7 +27,7 @@ public class DMTestCommand {
 
                     // WRITE test
                     byte[] testData = "hello".getBytes();
-                    media.write(0, testData);
+                    media.write(0, testData, stack);
 
                     // READ test
                     byte[] read = media.read(0, 5);

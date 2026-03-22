@@ -21,7 +21,19 @@ public class DMItemRegistry {
 
     public static final DeferredItem<Item> USB_4M = ITEMS.registerItem(
             "usb_4m",
-            DMUSBStickItem::new,
+            props -> new DMUSBStickItem(props, 4),
+            new Item.Properties().stacksTo(1)
+    );
+
+    public static final DeferredItem<Item> USB_16M = ITEMS.registerItem(
+            "usb_16m",
+            props -> new DMUSBStickItem(props, 16),
+            new Item.Properties().stacksTo(1)
+    );
+
+    public static final DeferredItem<Item> USB_32M = ITEMS.registerItem(
+            "usb_32m",
+            props -> new DMUSBStickItem(props, 32),
             new Item.Properties().stacksTo(1)
     );
 

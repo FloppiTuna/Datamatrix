@@ -5,6 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import xyz.meowricles.item.DMBaseItem;
 import xyz.meowricles.utils.FileSizePrettier;
 
@@ -16,8 +19,7 @@ public class DMBaseStorageMedia extends DMBaseItem {
     }
 
     public DMStorageMediaInterface getMediaInterface(ItemStack stack) {
-        return new DMAbstractStorageMedia(stack) {
-        };
+        return DMMediaManager.getMedia(stack);
     }
 
     @Override

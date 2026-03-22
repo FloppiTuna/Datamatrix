@@ -11,5 +11,6 @@
   "item.datamatrix.shoddy_memory.lore": "A crudely manufactured storage device.\nDue to it's poor craftsmanship, it's capacity is §lunpredictable.",
 
   "block.datamatrix.universal_adapter": "Universal Adapter",
-  "block.datamatrix.universal_adapter.lore": "A mysterious device that can interact with all forms of media in Datamatrix.\n(cannot be crafted!)"
+  "block.datamatrix.universal_adapter.lore": "A mysterious device that can interact with all forms of media in Datamatrix.\n(cannot be crafted!)",
+  "item.datamatrix.usb_drive": "USB Drive (%s)"
 }

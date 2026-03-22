@@ -1,7 +1,6 @@
 package xyz.meowricles.item.media;
 
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import xyz.meowricles.registry.DMComponentsRegistry;
 import xyz.meowricles.data.DMStorageDataCodec;
 
@@ -18,32 +17,34 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
     protected String id;
     protected byte[] data;
     protected int used;
+    protected int capacity;
 
     private final ItemStack stack;
     private final Path savePath;
 
+    private boolean dirty = false;
+
     public DMAbstractStorageMedia(ItemStack stack) {
         this.stack = stack;
-        loadData();
+
+        loadData(); // sets id, used, capacity component
+
         this.data = new byte[getCapacity()];
+
         this.savePath = Paths.get("datamatrix/storage/");
         try {
             Files.createDirectories(savePath);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create storage folder", e);
+            throw new RuntimeException("Failed to create storage folder!!!", e);
         }
 
-        // now load the file
+        // Load file data
         File file = getFile();
         if (file.exists() && file.length() > 0) {
             try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-                int bytesRead = raf.read(this.data);
-                if (bytesRead != this.data.length) {
-                    // If file is smaller than capacity, remaining bytes stay zero
-                    System.out.println("Partial read: " + bytesRead + " bytes");
-                }
+                raf.read(this.data);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to read storage file", e);
+                throw new RuntimeException("Failed to read storage file!", e);
             }
         }
     }
@@ -51,8 +52,8 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
     private File getFile() {
         File file = savePath.resolve(id + ".bin").toFile();
         if (!file.exists()) {
-            try {
-                file.createNewFile();
+            try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+                raf.setLength(capacity);
             } catch (IOException e) {
                 throw new RuntimeException("Could not create storage file at " + file, e);
             }
@@ -64,29 +65,27 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
         DMStorageDataCodec stored = stack.get(DMComponentsRegistry.STORAGE_DATA.get());
 
         if (stored != null) {
-            // this feels like one of those things that gets u crucified and put into software dev purgatory
             this.id = stored.id();
-            this.used =  stored.used();
-            // okay eventually we ened to actually save and load the data to disk sighhhh i hate filesystems
-//            this.data =
+            this.used = stored.used();
+            this.capacity = stored.capacity();
         } else {
-            // fresh storage media, initialize it
             this.id = UUID.randomUUID().toString();
-            int capacity = generateCapacity(); // <- IMPORTANT
+            this.capacity = generateCapacity();
             this.used = 0;
 
-            stack.set(DMComponentsRegistry.STORAGE_DATA.get(), new DMStorageDataCodec(id, capacity, used));
+            stack.set(DMComponentsRegistry.STORAGE_DATA.get(),
+                    new DMStorageDataCodec(id, capacity, used));
         }
     }
 
-    private void saveData() {
-        stack.set(DMComponentsRegistry.STORAGE_DATA.get(), new DMStorageDataCodec(id, getCapacity(), used));
+    public void saveData(ItemStack stack) {
+        stack.set(DMComponentsRegistry.STORAGE_DATA.get(),
+                new DMStorageDataCodec(id, capacity, used));
 
-        // Write actual bytes to file
         File file = getFile();
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-            raf.setLength(0); // truncate before writing
-            raf.write(this.data, 0, used); // only write used bytes
+            raf.seek(0);
+            raf.write(this.data);
         } catch (IOException e) {
             throw new RuntimeException("Failed to save storage file", e);
         }
@@ -94,8 +93,7 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
 
     @Override
     public int getCapacity() {
-        DMStorageDataCodec stored = stack.get(DMComponentsRegistry.STORAGE_DATA.get());
-        return stored != null ? stored.capacity() : 0;
+        return capacity;
     }
 
     @Override
@@ -110,20 +108,31 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
 
     @Override
     public byte[] read(int offset, int size) {
+        if (offset >= data.length) return new byte[0];
         int end = Math.min(offset + size, data.length);
         return Arrays.copyOfRange(data, offset, end);
     }
 
     @Override
-    public void write(int offset, byte @NotNull [] input) {
+    public void write(int offset, byte[] input, ItemStack stack) {
         int writable = Math.min(input.length, data.length - offset);
         System.arraycopy(input, 0, this.data, offset, writable);
 
         used = Math.max(used, offset + writable);
 
-        // todo: writing to disk on EVERY write operation is stupid because we dont live in the year 1986 anymore
-        // implement a better way to do this while also not absolutely incinerating the server
-        saveData();
+        stack.set(DMComponentsRegistry.STORAGE_DATA.get(),
+                new DMStorageDataCodec(id, capacity, used));
+
+        dirty = true;
+    }
+
+    public void flush() {
+        if (!dirty) return;
+        saveData(this.stack);
+    }
+
+    public void tick() {
+        flush();
     }
 
     protected int generateCapacity() {

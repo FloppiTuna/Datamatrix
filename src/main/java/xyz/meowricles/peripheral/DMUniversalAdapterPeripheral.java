@@ -46,6 +46,6 @@ public class DMUniversalAdapterPeripheral implements GenericPeripheral {
             throw new LuaException("No media present.");
         }
 
-        DMMediaManager.getMedia(adapter.getMedia()).write(offset, data.getBytes(StandardCharsets.ISO_8859_1));
+        DMMediaManager.getMedia(adapter.getMedia()).write(offset, data.getBytes(StandardCharsets.ISO_8859_1), adapter.getMedia());
     }
 }
