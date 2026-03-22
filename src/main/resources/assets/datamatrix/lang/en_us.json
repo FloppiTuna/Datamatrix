@@ -1,0 +1,15 @@
+{
+  "datamatrix.guide_name": "Datamatrix for Dummies",
+
+  "item.datamatrix.usb_4m": "USB Drive (4M)",
+  "item.datamatrix.usb_4m.lore": "A simple USB flash drive.",
+
+  "item.datamatrix.compact_disc": "Compact Disc",
+  "item.datamatrix.compact_disc.lore": "An optical storage device, commonly used for storing audio information.\nCan also slice pizza, if you're brave enough.",
+
+  "item.datamatrix.shoddy_memory": "Shoddy Memory",
+  "item.datamatrix.shoddy_memory.lore": "A crudely manufactured storage device.\nDue to it's poor craftsmanship, it's capacity is §lunpredictable.",
+
+  "block.datamatrix.universal_adapter": "Universal Adapter",
+  "block.datamatrix.universal_adapter.lore": "A mysterious device that can interact with all forms of media in Datamatrix.\n(cannot be crafted!)"
+}

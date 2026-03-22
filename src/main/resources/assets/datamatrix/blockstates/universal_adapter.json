@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "has_media=false": { "model": "datamatrix:block/universal_adapter_idle" },
+    "has_media=true": { "model": "datamatrix:block/universal_adapter_hasmedia" }
+  }
+}

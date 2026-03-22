@@ -1,0 +1,15 @@
+{
+  "item_settings": {
+    "display_name": {
+      "type": "translatable",
+      "translate": "datamatrix.guide_name"
+    },
+    "tooltip_lines": [
+      {
+        "text": ":))",
+        "color": "dark_gray"
+      }
+    ],
+    "model": "datamatrix:item/guide"
+  }
+}
