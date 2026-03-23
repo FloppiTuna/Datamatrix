@@ -26,8 +26,20 @@ public class DMBaseStorageMedia extends DMBaseItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> components, TooltipFlag flag) {
         super.appendHoverText(stack, context, components, flag);
 
-        int used = getMediaInterface(stack).getUsed();
-        components.add(Component.literal(String.format("Used: %s / %s", FileSizePrettier.humanReadableByteCountBin(used), FileSizePrettier.humanReadableByteCountBin(getMediaInterface(stack).getCapacity()))).withStyle(ChatFormatting.DARK_AQUA)
+        DMAbstractStorageMedia media = DMMediaManager.getMedia(stack);
+        if (media == null) {
+            components.add(
+                    Component.literal("Uninitialized").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)
+            );
+            components.add(
+                    Component.literal("Interact with this device to initialize it.").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC)
+            );
+
+            return;
+        };
+
+
+        components.add(Component.literal(String.format("Used: %s / %s", FileSizePrettier.humanReadableByteCountBin(media.getUsed()), FileSizePrettier.humanReadableByteCountBin(media.getCapacity()))).withStyle(ChatFormatting.DARK_AQUA)
                 .withStyle(ChatFormatting.DARK_GRAY));
         components.add(Component.literal(getMediaInterface(stack).getId()).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
     }

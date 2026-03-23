@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import xyz.meowricles.utils.FileSizePrettier;
 
 public class DMUSBStickItem extends DMBaseStorageMedia {
-    public static int MEGS;
+    public final int MEGS;
 
     public DMUSBStickItem(Item.Properties props, int megs) {
         super(props);
@@ -18,7 +18,7 @@ public class DMUSBStickItem extends DMBaseStorageMedia {
         return new DMAbstractStorageMedia(stack) {
             @Override
             protected int generateCapacity() {
-                return MEGS > 0 ? MEGS * 1024 * 1024 : 4 * 1024 * 1024;
+                return MEGS * 1024 * 1024;
             }
         };
     }

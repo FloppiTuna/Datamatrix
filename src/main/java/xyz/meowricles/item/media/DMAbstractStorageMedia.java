@@ -26,23 +26,25 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
 
     public DMAbstractStorageMedia(ItemStack stack) {
         this.stack = stack;
-
-        loadData(); // sets id, used, capacity component
-
-        this.data = new byte[getCapacity()];
-
+        loadData(); // only id, used, capacity
         this.savePath = Paths.get("datamatrix/storage/");
+
         try {
             Files.createDirectories(savePath);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create storage folder!!!", e);
         }
+    }
 
-        // Load file data
+    private void ensureLoaded() {
+        if (data != null) return;
+
+        data = new byte[getCapacity()];
         File file = getFile();
+
         if (file.exists() && file.length() > 0) {
             try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-                raf.read(this.data);
+                raf.read(data);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to read storage file!", e);
             }
@@ -106,15 +108,24 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
         return id;
     }
 
+    public void initialize() {
+        ensureLoaded();
+        saveData(stack);
+    }
+
     @Override
     public byte[] read(int offset, int size) {
+        ensureLoaded();
+
         if (offset >= data.length) return new byte[0];
         int end = Math.min(offset + size, data.length);
         return Arrays.copyOfRange(data, offset, end);
     }
 
     @Override
-    public void write(int offset, byte[] input, ItemStack stack) {
+    public int write(int offset, byte[] input, ItemStack stack) {
+        ensureLoaded();
+
         int writable = Math.min(input.length, data.length - offset);
         System.arraycopy(input, 0, this.data, offset, writable);
 
@@ -124,6 +135,7 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
                 new DMStorageDataCodec(id, capacity, used));
 
         dirty = true;
+        return writable;
     }
 
     public void flush() {

@@ -12,5 +12,5 @@ public interface DMStorageMediaInterface {
     byte[] read(int offset, int length);
     // void write(int offset, byte[] data);
 
-    void write(int offset, byte[] input, ItemStack stack);
+    int write(int offset, byte[] input, ItemStack stack);
 }

@@ -32,12 +32,27 @@ public class DMUniversalAdapterPeripheral implements GenericPeripheral {
     }
 
     @LuaFunction(mainThread = true)
+    public void initialize(DMUniversalAdapterBlockEntity adapter) throws LuaException {
+        if (!adapter.hasMedia()) {
+            throw new LuaException("No media present.");
+        }
+        DMAbstractStorageMedia media = DMMediaManager.ensureMedia(adapter.getMedia());
+        if (media == null) {
+            throw new LuaException("Invalid or unsupported media.");
+        }
+        media.initialize();
+    }
+
+    @LuaFunction(mainThread = true)
     public byte[] read(DMUniversalAdapterBlockEntity adapter, int offset, int length) throws LuaException {
         if (!adapter.hasMedia()) {
             throw new LuaException("No media present.");
         }
-
-        return DMMediaManager.getMedia(adapter.getMedia()).read(offset, length);
+        DMAbstractStorageMedia media = DMMediaManager.getMedia(adapter.getMedia());
+        if (media == null) {
+            throw new LuaException("Invalid or uninitialized media.");
+        }
+        return media.read(offset, length);
     }
 
     @LuaFunction(mainThread = true)
@@ -45,7 +60,10 @@ public class DMUniversalAdapterPeripheral implements GenericPeripheral {
         if (!adapter.hasMedia()) {
             throw new LuaException("No media present.");
         }
-
-        DMMediaManager.getMedia(adapter.getMedia()).write(offset, data.getBytes(StandardCharsets.ISO_8859_1), adapter.getMedia());
+        DMAbstractStorageMedia media = DMMediaManager.getMedia(adapter.getMedia());
+        if (media == null) {
+            throw new LuaException("Invalid or uninitialized media.");
+        }
+        media.write(offset, data.getBytes(StandardCharsets.ISO_8859_1), adapter.getMedia());
     }
 }
