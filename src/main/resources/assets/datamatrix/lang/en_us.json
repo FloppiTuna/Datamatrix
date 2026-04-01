@@ -1,6 +1,10 @@
 {
   "datamatrix.guide_name": "Datamatrix for Dummies",
 
+  "advancement.disc_wars.title": "Disc Wars",
+  "advancement.disc_wars.description": "Kill a player or mob using a thrown Compact Disc.",
+
+
   "item.datamatrix.usb_4m": "USB Drive (4M)",
   "item.datamatrix.usb_4m.lore": "A simple USB flash drive.",
 

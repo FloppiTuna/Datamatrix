@@ -1,5 +1,7 @@
 package xyz.meowricles.item.media;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import xyz.meowricles.registry.DMComponentsRegistry;
 import xyz.meowricles.data.DMStorageDataCodec;
@@ -84,10 +86,13 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
         stack.set(DMComponentsRegistry.STORAGE_DATA.get(),
                 new DMStorageDataCodec(id, capacity, used));
 
+        if (this.data == null) return;
+
         File file = getFile();
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
             raf.seek(0);
             raf.write(this.data);
+            dirty = false;
         } catch (IOException e) {
             throw new RuntimeException("Failed to save storage file", e);
         }
@@ -136,6 +141,15 @@ public abstract class DMAbstractStorageMedia implements DMStorageMediaInterface 
 
         dirty = true;
         return writable;
+    }
+
+    public void setLabel(String label) {
+        stack.set(DataComponents.CUSTOM_NAME, Component.literal(label));
+    }
+
+    public String getLabel() {
+        Component name = stack.get(DataComponents.CUSTOM_NAME);
+        return name != null ? name.getString() : "";
     }
 
     public void flush() {
