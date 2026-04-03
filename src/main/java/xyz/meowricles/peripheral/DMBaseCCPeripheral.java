@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.meowricles.Datamatrix;
 
 public class DMBaseCCPeripheral implements GenericPeripheral {
-    private String name;
+    private final String name;
 
     public DMBaseCCPeripheral(String name) {
         super();
