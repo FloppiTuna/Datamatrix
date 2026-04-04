@@ -11,7 +11,7 @@ local filesystems = dmfs.getFilesystems()
 -- on startup check to make sure that the headers in each filesystem are defined correctly
 for fs, def in pairs(filesystems) do
     local headerAt0x0 = false
-    for _, component in pairs(def.header) do
+    for _, component in pairs(def.header.components) do
         if (component.pos == 0x0) then headerAt0x0 = true end;
     end
 

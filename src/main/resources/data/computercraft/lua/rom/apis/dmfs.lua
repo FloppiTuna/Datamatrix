@@ -7,11 +7,6 @@ local filesystems = {
     ["DMCD"] = {
         friendlyName = "Datamatrix Audio CD Filesystem",
         header = {
-            clamp = 64,
-            components = {
-                { pos = 0x0, content = "DMCDFS00" },
-                { pos = 0x9, content = "$label", clamp = 16 }
-            }
         }
     }
 }
