@@ -7,6 +7,11 @@ local filesystems = {
     ["DMCD"] = {
         friendlyName = "Datamatrix Audio CD Filesystem",
         header = {
+            signature = "DMCDFS00",
+            components = {
+                label = { type = "string", default = "Audio CD" },
+                trackCount = { type = "number", default = 0 }
+            }
         }
     }
 }
@@ -23,13 +28,24 @@ function assembleHeader(name, params)
         error("Cannot assemble header: filesystem " .. name .. " doesn't exist")
     end
 
-    -- create blank buffer
-    local buffer = string.rep("\0", fs.header.clamp)
+    local header = {}
 
-
-    for _, component in ipairs(fs.header.components) do
-
+    for name, def in pairs(fs.header.components) do
+        if (params[name]) then
+            header[name] = params[name]
+        else
+            header[name] = def.default
+        end
     end
+
+
+--     -- create blank buffer
+--     local buffer = string.rep("\0", fs.header.clamp)
+--
+--
+--     for _, component in ipairs(fs.header.components) do
+--
+--     end
 
     return header;
 end
