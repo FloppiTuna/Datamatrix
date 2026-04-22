@@ -144,6 +144,14 @@ end
 
 screens.FORMAT_MENU = function()
     resetScreen()
+
+    print("Select a filesystem to format this device with.")
+    print()
+    local filesystems = dmfs.getFilesystems()
+
+    for name, fs in pairs(filesystems) do
+        print("[" .. 0 .. "] " .. name)
+    end
 end
 
 screens.MAIN_MENU()
